@@ -18,7 +18,8 @@ class App extends Component {
       totalPages: 0,
       count: 0,
       loaded: false,
-      showModal: false
+      showModal: false,
+      selectedPokemon: null
     };
 
     this.loadPokemon = this.loadPokemon.bind(this);
@@ -71,10 +72,21 @@ class App extends Component {
     })
   }
 
-  handleModalOpen() {
-    this.setState({
-      showModal: true
-    });
+  handleModalOpen(pokemon) {
+    if (pokemon.url !== undefined) {
+      fetch(`${pokemon.url}`)
+        .then(response => {
+          return response.json()
+        }).then(json => {
+          console.log(json);
+          this.setState({
+            selectedPokemon: json,
+            showModal: true
+          })
+        }).catch(ex => {
+          console.log('parsing failed', ex);
+        })
+    }
   }
 
   handleModalClose() {
@@ -88,7 +100,7 @@ class App extends Component {
       <div className="App">
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
-          <h2>Pokemon Dashboard by CodeWithTim.com</h2>
+          <h2>Pokemon Dashboard</h2>
         </div>
 
         {this.state.loaded ? null : "Loading..."}
@@ -104,9 +116,10 @@ class App extends Component {
           activePage={this.state.activePage}
           onSelect={this.handlePaginationSelect}
           totalPages={this.state.totalPages}
+          openModal={this.handleModalOpen}
           />
 
-        <PokemonModal openModal={this.handleModalOpen} closeModal={this.handleModalClose} showModal={this.state.showModal} />
+        <PokemonModal closeModal={this.handleModalClose} showModal={this.state.showModal} pokemon={this.state.selectedPokemon} />
       </div>
     );
   }
