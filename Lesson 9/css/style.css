@@ -1,0 +1,10 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+footer {
+  display: block;
+  height: 10vh;
+  padding: 20px;
+}
