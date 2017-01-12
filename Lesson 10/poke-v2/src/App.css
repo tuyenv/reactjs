@@ -39,3 +39,15 @@ button.PokeList-item.list-group-item {
 #contained-modal-title {
   text-transform: capitalize;
 }
+.btn-info-2 {
+  margin: 5px;
+}
+.displayNone {
+  display: none;
+}
+.poke-detail {
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

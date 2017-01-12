@@ -4,6 +4,7 @@ import './App.css';
 import 'whatwg-fetch';
 import PokemonIndexList from './components/PokemonIndexList';
 import PokemonModal from './components/PokemonModal';
+import PokemonDetail from './components/PokemonDetail';
 
 class App extends Component {
 
@@ -19,7 +20,9 @@ class App extends Component {
       count: 0,
       loaded: false,
       showModal: false,
-      selectedPokemon: null
+      selectedPokemon: null,
+      displayHome: "",
+      displayDetail: "displayNone"
     };
 
     this.loadPokemon = this.loadPokemon.bind(this);
@@ -27,6 +30,8 @@ class App extends Component {
     this.handleLimitChange = this.handleLimitChange.bind(this);
     this.handleModalOpen = this.handleModalOpen.bind(this);
     this.handleModalClose = this.handleModalClose.bind(this);
+    this.handleClickInfo = this.handleClickInfo.bind(this);
+    this.handleClickBack = this.handleClickBack.bind(this);
   }
 
   loadPokemon(url) {
@@ -43,7 +48,6 @@ class App extends Component {
           count: json.count,
           loaded: true
         });
-        console.log(this.state)
       }).catch(err => {
         console.log(err)
       })
@@ -78,7 +82,6 @@ class App extends Component {
         .then(response => {
           return response.json()
         }).then(json => {
-          console.log(json);
           this.setState({
             selectedPokemon: json,
             showModal: true
@@ -95,6 +98,30 @@ class App extends Component {
     });
   }
 
+  handleClickInfo(pokemon) {
+    if (pokemon.url !== undefined) {
+      fetch(`${pokemon.url}`)
+        .then(response => {
+          return response.json()
+        }).then(json => {
+          this.setState({
+            displayHome: "displayNone",
+            displayDetail: "",
+            selectedPokemon: json
+          })
+        }).catch(ex => {
+          console.log('parsing failed', ex);
+        })
+    }
+  }
+
+  handleClickBack() {
+    this.setState({
+      displayHome: "",
+      displayDetail: "displayNone"
+    })
+  }
+
   render() {
     return (
       <div className="App">
@@ -103,23 +130,29 @@ class App extends Component {
           <h2>Pokemon Dashboard</h2>
         </div>
 
-        {this.state.loaded ? null : "Loading..."}
-        <PokemonIndexList
-          display={this.state.loaded}
-          options={[10,50,100,200]}
-          selectedValue={this.state.limit}
-          allValue={this.state.count}
-          onOptionSelected={this.handleLimitChange}
-          listOfPokemon={this.state.pokemon}
-          bsSize="small"
-          items={this.state.totalPages}
-          activePage={this.state.activePage}
-          onSelect={this.handlePaginationSelect}
-          totalPages={this.state.totalPages}
-          openModal={this.handleModalOpen}
-          />
+        <div className={this.state.displayHome}>
+          {this.state.loaded ? null : "Loading..."}
+          <PokemonIndexList
+            display={this.state.loaded}
+            options={[10,50,100,200]}
+            selectedValue={this.state.limit}
+            allValue={this.state.count}
+            onOptionSelected={this.handleLimitChange}
+            listOfPokemon={this.state.pokemon}
+            bsSize="small"
+            items={this.state.totalPages}
+            activePage={this.state.activePage}
+            onSelect={this.handlePaginationSelect}
+            totalPages={this.state.totalPages}
+            openModal={this.handleModalOpen}
+            openInfo={this.handleClickInfo}
+            />
+            <PokemonModal closeModal={this.handleModalClose} showModal={this.state.showModal} pokemon={this.state.selectedPokemon} />
+        </div>
 
-        <PokemonModal closeModal={this.handleModalClose} showModal={this.state.showModal} pokemon={this.state.selectedPokemon} />
+        <div className={this.state.displayDetail}>
+          <PokemonDetail pokemon={this.state.selectedPokemon} clickBack={this.handleClickBack} />
+        </div>
       </div>
     );
   }

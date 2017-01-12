@@ -1,12 +1,13 @@
 import React from 'react';
-import { ListGroup, ListGroupItem, Col } from 'react-bootstrap/lib/';
+import { ListGroup, ListGroupItem, Col, Button } from 'react-bootstrap/lib/';
 
-const PokeList = ({listOfPokemon, openModal}) => {
+const PokeList = ({listOfPokemon, openModal, openInfo}) => {
 
   let pokemon = listOfPokemon.map((creature) => {
     return (
       <Col sm={6} md={4} key={creature.name}>
         <ListGroupItem className='PokeList-item' onClick={openModal.bind(null, creature)}>{creature.name}</ListGroupItem>
+        <Button bsStyle="info" onClick={openInfo.bind(null, creature)} className='btn-info-2'>Info</Button>
       </Col>
     )
   });
